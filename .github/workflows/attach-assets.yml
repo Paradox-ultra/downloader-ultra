@@ -5,41 +5,92 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Release tag
+        description: Release tag (created as a release if it does not exist yet)
         required: true
       apk_url:
         description: Temporary URL(s) of the APK parts, space-separated, in order
         required: true
       apk_name:
-        description: Asset file name
+        description: Asset file name, e.g. Paradox_Downloader_v4.3.apk
         required: true
       apk_sha256:
         description: SHA-256 of the APK
         required: true
+
 permissions:
   contents: write
+
+# Two runs for the same tag must not upload over each other.
+concurrency:
+  group: attach-${{ inputs.tag }}
+  cancel-in-progress: false
+
 jobs:
   attach:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TAG: ${{ inputs.tag }}
+      APK_URL: ${{ inputs.apk_url }}
+      APK_NAME: ${{ inputs.apk_name }}
+      APK_SHA: ${{ inputs.apk_sha256 }}
+      GH_TOKEN: ${{ github.token }}
     steps:
+      - name: Check inputs
+        run: |
+          # Asset name: a plain file name ending in .apk, no paths or spaces.
+          if ! [[ "$APK_NAME" =~ ^[A-Za-z0-9._-]+\.apk$ ]]; then
+            echo "::error::apk_name must be a plain file name ending in .apk (got '$APK_NAME')"; exit 1
+          fi
+          sha=$(printf '%s' "$APK_SHA" | tr -d '[:space:]' | tr 'A-F' 'a-f')
+          if ! [[ "$sha" =~ ^[0-9a-f]{64}$ ]]; then
+            echo "::error::apk_sha256 must be 64 hex characters"; exit 1
+          fi
+          echo "APK_SHA=$sha" >> "$GITHUB_ENV"
+          if ! [[ "$TAG" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+            echo "::error::tag contains unsupported characters"; exit 1
+          fi
+
       - name: Fetch and verify the APK
-        env:
-          APK_URL: ${{ inputs.apk_url }}
-          APK_NAME: ${{ inputs.apk_name }}
-          APK_SHA: ${{ inputs.apk_sha256 }}
         run: |
+          set -f   # URLs often contain ? and *, never glob them
           : > "$APK_NAME"
+          n=0
           for u in $APK_URL; do
-            d="$u"
-            case "$u" in https://tmpfiles.org/dl/*) ;; https://tmpfiles.org/*) d=$(curl -fsSL "$u" | grep -oE 'https://tmpfiles.org/dl/[^"]+' | head -1) ;; esac
-            curl -fL --retry 5 --retry-delay 5 -o part.bin "$d"
-            cat part.bin >> "$APK_NAME"; rm part.bin
+            n=$((n+1))
+            case "$u" in
+              http://*) u="https://${u#http://}" ;;
+            esac
+            case "$u" in
+              https://tmpfiles.org/dl/*) d="$u" ;;
+              # Share page -> direct download: insert /dl/ after the host.
+              https://tmpfiles.org/*)    d="https://tmpfiles.org/dl/${u#https://tmpfiles.org/}" ;;
+              https://*)                 d="$u" ;;
+              *) echo "::error::part $n is not an http(s) URL: $u"; exit 1 ;;
+            esac
+            echo "Part $n: $d"
+            curl -fL --retry 5 --retry-delay 5 --retry-all-errors \
+                 --connect-timeout 20 --max-time 600 -o part.bin "$d"
+            # A host that returns an HTML error page with 200 would corrupt the APK.
+            if head -c 512 part.bin | grep -qi '<html'; then
+              echo "::error::part $n returned an HTML page, not file data (link expired?)"; exit 1
+            fi
+            cat part.bin >> "$APK_NAME"; rm -f part.bin
           done
-          echo "$APK_SHA  $APK_NAME" | sha256sum -c -
+          [ "$n" -gt 0 ] || { echo "::error::no URLs given"; exit 1; }
+          if ! echo "$APK_SHA  $APK_NAME" | sha256sum -c -; then
+            echo "::error::SHA-256 mismatch. Got $(sha256sum "$APK_NAME" | cut -d' ' -f1)"; exit 1
+          fi
+          # APKs are zip files: they must start with "PK".
+          [ "$(head -c 2 "$APK_NAME")" = "PK" ] || { echo "::error::file is not an APK/zip"; exit 1; }
           sha256sum "$APK_NAME" | tee SHA256SUMS.txt
+          ls -l "$APK_NAME"
+
       - name: Upload to release
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TAG: ${{ inputs.tag }}
         run: |
-          gh release upload "$TAG" "${{ inputs.apk_name }}" SHA256SUMS.txt --clobber --repo "$GITHUB_REPOSITORY"
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $TAG not found, creating it"
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$TAG" --notes "Paradox Downloader $TAG"
+          fi
+          gh release upload "$TAG" "$APK_NAME" SHA256SUMS.txt --clobber --repo "$GITHUB_REPOSITORY"
+          echo "Attached $APK_NAME to $TAG" >> "$GITHUB_STEP_SUMMARY"
