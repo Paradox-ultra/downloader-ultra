@@ -102,5 +102,13 @@ jobs:
             echo "Release $TAG not found, creating it"
             gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$TAG" --notes "Paradox Downloader $TAG"
           fi
+          # Releases can carry several APKs (one per CPU type): keep the other lines.
+          mv SHA256SUMS.txt new-sums.txt
+          if gh release download "$TAG" -p SHA256SUMS.txt -O old-sums.txt --repo "$GITHUB_REPOSITORY" 2>/dev/null; then
+            grep -v "  $APK_NAME\$" old-sums.txt > SHA256SUMS.txt || true
+          fi
+          cat new-sums.txt >> SHA256SUMS.txt
+          sort -k2 -o SHA256SUMS.txt SHA256SUMS.txt
+          cat SHA256SUMS.txt
           gh release upload "$TAG" "$APK_NAME" SHA256SUMS.txt --clobber --repo "$GITHUB_REPOSITORY"
           echo "Attached $APK_NAME to $TAG" >> "$GITHUB_STEP_SUMMARY"
