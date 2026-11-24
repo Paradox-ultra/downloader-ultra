@@ -71,6 +71,16 @@ jobs:
             echo "Part $n: $d"
             curl -fL --retry 5 --retry-delay 5 --retry-all-errors \
                  --connect-timeout 20 --max-time 600 -o part.bin "$d"
+            # tmpfiles.org now answers /dl/ links with a page whose Download button
+            # holds a signed link (/dl/<expiry>.<token>/...). Follow that once.
+            if head -c 512 part.bin | grep -qi '<html' && [[ "$d" == https://tmpfiles.org/* ]]; then
+              s=$(grep -oE 'https://tmpfiles\.org/dl/[0-9]+\.[0-9a-f]+/[^"<> ]+' part.bin | head -1 || true)
+              if [ -n "$s" ]; then
+                echo "Following signed link: $s"
+                curl -fL --retry 5 --retry-delay 5 --retry-all-errors \
+                     --connect-timeout 20 --max-time 600 -o part.bin "$s"
+              fi
+            fi
             # A host that returns an HTML error page with 200 would corrupt the APK.
             if head -c 512 part.bin | grep -qi '<html'; then
               echo "::error::part $n returned an HTML page, not file data (link expired?)"; exit 1

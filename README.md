@@ -16,7 +16,7 @@
 
 ## Install
 
-1. Open the **[latest release](https://github.com/Paradox-ultra/paradox-downloader/releases/latest)** and download the `.apk` file under **Assets** (for example `Paradox_Downloader_v4.2.apk`).
+1. Open the **[latest release](https://github.com/Paradox-ultra/paradox-downloader/releases/latest)** and download the `.apk` file under **Assets** (for example `Paradox_Downloader_v4.3.1.apk`).
 2. Open the downloaded file. If Android asks, allow your browser or file manager to **install unknown apps**.
 3. Tap **Install**.
 
@@ -24,7 +24,9 @@
 
 ## Updating
 
-Install the new APK over the old one. All official builds are signed with the same key, so your downloads and settings are kept.
+**Coming from v4.2 or older?** Uninstall the old app. From v4.3.1 the app has a new signing key and a new app ID (`bot.paradox.downloader.app`), so it installs as a separate app and can't update the old one.
+
+From v4.3.1 on, install new versions over the old one: your downloads and settings are kept.
 
 ## Verify your download (optional)
 
@@ -34,20 +36,27 @@ Each release lists the APK's SHA-256 in its notes and in `SHA256SUMS.txt`. To ch
 sha256sum -c SHA256SUMS.txt
 ```
 
-It should print `OK`. On Windows: `certutil -hashfile Paradox_Downloader_v4.2.apk SHA256`, then compare with the hash in the release notes.
+It should print `OK`. On Windows: `certutil -hashfile Paradox_Downloader_v4.3.1.apk SHA256`, then compare with the hash in the release notes.
 
 ## Troubleshooting
 
 | Problem | Fix |
 |---|---|
-| **"App not installed"** | You have a copy signed by someone else. Uninstall it, then install the APK from this page. Your data from that copy will not carry over. |
-| **"Blocked by Play Protect"** | Tap **More details → Install anyway**. This shows for apps installed outside the Play Store. |
+| **"App not installed"** | An old version (v4.2 or older) or a copy signed by someone else is still installed. Uninstall it (also from Dual Apps / Secure Folder / work profile), then install the APK from this page. |
+| **"Harmful app blocked" / "Blocked by Play Protect"** | Tap **More details → Install anyway**. Don't tap *OK*: that cancels the install. Play Protect warns about apps from outside the Play Store. |
 | **"There was a problem parsing the package"** | The download was cut off. Download it again and check it with the steps above. |
 | **Install button greyed out** | Close any screen overlay or bubble apps (screen dimmers, chat heads), then try again. |
 
-## What's new in v4.2
+## What's new in v4.3.1
 
-- **Automatic update check.** When a new version is out, an *Update available* card shows when you open the app, with *Download*, *Later* and *Skip this version*. Checked at most every 12 hours. No tracking, no new permissions.
+- **Rebuilt from the ground up.** New Material 3 design that follows your wallpaper colours (Android 12+), dark mode, and a smooth download list.
+- **Faster, sturdier downloads.** Up to 16 connections per file; resume works after pausing, closing the app or losing signal.
+- **Files land in Downloads** with proper names and extensions.
+- **Better link support:** Google Drive large files, Gofile, Dropbox, OneDrive, MediaFire and mirror pages.
+- **17 bugs fixed**, including stuck *Queued* jobs, wrong sizes and battery-draining animations.
+- **New app ID and signing key.** See *Updating* above.
+
+**v4.2:** Automatic update check. When a new version is out, an *Update available* card shows when you open the app, with *Download*, *Later* and *Skip this version*. Checked at most every 12 hours. No tracking, no new permissions.
 
 **v4.1:** WhatsApp channel welcome card on launch, with *Join channel*, *Later* and *Don't show again*.
 
@@ -62,9 +71,9 @@ This repository holds release builds only; the source code is not published here
 
 Run **Actions → Attach release asset → Run workflow** with:
 
-- `tag`: the release tag, e.g. `v4.3` (a release is created if it doesn't exist)
-- `apk_url`: one or more temporary download URLs, space-separated, in order (tmpfiles.org share links are converted automatically)
-- `apk_name`: e.g. `Paradox_Downloader_v4.3.apk`
+- `tag`: the release tag, e.g. `v4.3.1` (a release is created if it doesn't exist)
+- `apk_url`: one or more temporary download URLs, space-separated, in order (tmpfiles.org share and download-page links are followed automatically)
+- `apk_name`: e.g. `Paradox_Downloader_v4.3.1.apk`
 - `apk_sha256`: the SHA-256 of the full APK
 
 The workflow joins the parts, checks the hash, and uploads the APK with `SHA256SUMS.txt`.
