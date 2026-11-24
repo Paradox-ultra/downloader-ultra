@@ -16,7 +16,9 @@
 
 ## Install
 
-1. Open the **[latest release](https://github.com/Paradox-ultra/paradox-downloader/releases/latest)** and download the `.apk` file under **Assets** (for example `Paradox_Downloader_v4.3.1.apk`).
+1. Open the **[latest release](https://github.com/Paradox-ultra/paradox-downloader/releases/latest)** and download the APK for your phone under **Assets**:
+   - **`…_arm64-v8a.apk`**: almost every phone from 2017 on. Pick this if unsure.
+   - **`…_armeabi-v7a.apk`**: older or budget phones with a 32-bit system. Use it if the other one says "App not installed".
 2. Open the downloaded file. If Android asks, allow your browser or file manager to **install unknown apps**.
 3. Tap **Install**.
 
@@ -36,7 +38,7 @@ Each release lists the APK's SHA-256 in its notes and in `SHA256SUMS.txt`. To ch
 sha256sum -c SHA256SUMS.txt
 ```
 
-It should print `OK`. On Windows: `certutil -hashfile Paradox_Downloader_v4.3.1.apk SHA256`, then compare with the hash in the release notes.
+It should print `OK`. On Windows: `certutil -hashfile Paradox_Downloader_v4.4_arm64-v8a.apk SHA256`, then compare with the hash in the release notes.
 
 ## Troubleshooting
 
@@ -47,7 +49,16 @@ It should print `OK`. On Windows: `certutil -hashfile Paradox_Downloader_v4.3.1.
 | **"There was a problem parsing the package"** | The download was cut off. Download it again and check it with the steps above. |
 | **Install button greyed out** | Close any screen overlay or bubble apps (screen dimmers, chat heads), then try again. |
 
-## What's new in v4.3.1
+## What's new in v4.4
+
+- **Pick the quality before every download.** Paste a video link and choose Video or Audio only, then the quality. *Best available* (selected by default) saves the highest quality the creator uploaded (up to 4K/8K), with video and audio joined into one file.
+- **Thumbnail and captions.** Tick *Save thumbnail* / *Captions* to save them next to the video; for music, *Add cover art* embeds the artwork in the song.
+- **yt-dlp built in.** Instagram, Facebook, X, TikTok, Vimeo, Reddit and [1000+ other sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md). It updates itself once a day.
+- **Whole playlists in one tap.** YouTube and YouTube Music playlists download every track. Spotify playlists, albums and songs work too: Spotify's audio is DRM-protected, so each song is found by name on YouTube Music (up to about 100 songs per Spotify list).
+- **Fix:** a download no longer gets stuck on *Downloading* when one part of it fails.
+- One APK per CPU type to keep the download small (see *Install*).
+
+## v4.3.1
 
 - **Rebuilt from the ground up.** New Material 3 design that follows your wallpaper colours (Android 12+), dark mode, and a smooth download list.
 - **Faster, sturdier downloads.** Up to 16 connections per file; resume works after pausing, closing the app or losing signal.
@@ -71,9 +82,9 @@ This repository holds release builds only; the source code is not published here
 
 Run **Actions → Attach release asset → Run workflow** with:
 
-- `tag`: the release tag, e.g. `v4.3.1` (a release is created if it doesn't exist)
+- `tag`: the release tag, e.g. `v4.4` (a release is created if it doesn't exist)
 - `apk_url`: one or more temporary download URLs, space-separated, in order (tmpfiles.org share and download-page links are followed automatically)
-- `apk_name`: e.g. `Paradox_Downloader_v4.3.1.apk`
+- `apk_name`: e.g. `Paradox_Downloader_v4.4_arm64-v8a.apk`; run once per APK
 - `apk_sha256`: the SHA-256 of the full APK
 
 The workflow joins the parts, checks the hash, and uploads the APK with `SHA256SUMS.txt`.
