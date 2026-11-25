@@ -1,8 +1,8 @@
 <div align="center">
 
-# Paradox Downloader
+# Downloader Ultra
 
-**A video and file downloader for Android.**
+**A video, music and file downloader for Android.** Formerly *Paradox Downloader*.
 
 [![Latest release](https://img.shields.io/github/v/release/Paradox-ultra/paradox-downloader?label=latest&style=for-the-badge)](https://github.com/Paradox-ultra/paradox-downloader/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/Paradox-ultra/paradox-downloader/total?style=for-the-badge)](https://github.com/Paradox-ultra/paradox-downloader/releases)
@@ -38,7 +38,7 @@ Each release lists the APK's SHA-256 in its notes and in `SHA256SUMS.txt`. To ch
 sha256sum -c SHA256SUMS.txt
 ```
 
-It should print `OK`. On Windows: `certutil -hashfile Paradox_Downloader_v4.4_arm64-v8a.apk SHA256`, then compare with the hash in the release notes.
+It should print `OK`. On Windows: `certutil -hashfile Downloader_Ultra_v4.5_arm64-v8a.apk SHA256`, then compare with the hash in the release notes.
 
 ## Troubleshooting
 
@@ -49,7 +49,17 @@ It should print `OK`. On Windows: `certutil -hashfile Paradox_Downloader_v4.4_ar
 | **"There was a problem parsing the package"** | The download was cut off. Download it again and check it with the steps above. |
 | **Install button greyed out** | Close any screen overlay or bubble apps (screen dimmers, chat heads), then try again. |
 
-## What's new in v4.4
+## What's new in v4.5
+
+- **New name: Downloader Ultra**, with a new icon (a white circle with a rounded download arrow).
+- **A soft black-and-white design.** Calm monochrome colours, the Inter font, rounded cards and pill-shaped buttons.
+- **Theme setting:** Settings → *Theme* → Follow system, Light, Dark or **AMOLED black** (pure black, kind to OLED screens and battery).
+- **New home screen:** a live status line ("2 downloading · 8.4 MB/s"), a big link box and a one-tap **Paste link** button.
+- **Thumbnails on your downloads.** Cards show the video thumbnail or album art, the quality you picked (e.g. `2160p60 · VP9`) and a percentage.
+- **Bigger quality picker** with a large preview and the video length.
+- Finished files now save to `Download/Downloader Ultra`.
+
+## v4.4
 
 - **Pick the quality before every download.** Paste a video link and choose Video or Audio only, then the quality. *Best available* (selected by default) saves the highest quality the creator uploaded (up to 4K/8K), with video and audio joined into one file.
 - **Thumbnail and captions.** Tick *Save thumbnail* / *Captions* to save them next to the video; for music, *Add cover art* embeds the artwork in the song.
@@ -60,7 +70,7 @@ It should print `OK`. On Windows: `certutil -hashfile Paradox_Downloader_v4.4_ar
 
 ## v4.3.1
 
-- **Rebuilt from the ground up.** New Material 3 design that follows your wallpaper colours (Android 12+), dark mode, and a smooth download list.
+- **Rebuilt from the ground up.** New Material 3 design, dark mode, and a smooth download list.
 - **Faster, sturdier downloads.** Up to 16 connections per file; resume works after pausing, closing the app or losing signal.
 - **Files land in Downloads** with proper names and extensions.
 - **Better link support:** Google Drive large files, Gofile, Dropbox, OneDrive, MediaFire and mirror pages.
@@ -82,9 +92,9 @@ This repository holds release builds only; the source code is not published here
 
 Run **Actions → Attach release asset → Run workflow** with:
 
-- `tag`: the release tag, e.g. `v4.4` (a release is created if it doesn't exist)
+- `tag`: the release tag, e.g. `v4.5` (a release is created if it doesn't exist)
 - `apk_url`: one or more temporary download URLs, space-separated, in order (tmpfiles.org share and download-page links are followed automatically)
-- `apk_name`: e.g. `Paradox_Downloader_v4.4_arm64-v8a.apk`; run once per APK
+- `apk_name`: e.g. `Downloader_Ultra_v4.5_arm64-v8a.apk`; run once per APK
 - `apk_sha256`: the SHA-256 of the full APK
 
 The workflow joins the parts, checks the hash, and uploads the APK with `SHA256SUMS.txt`.
