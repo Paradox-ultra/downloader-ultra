@@ -63,7 +63,7 @@ It should print `OK`.
 
 ## About
 
-Downloader Ultra is free. This repository hosts the official release builds; please download the app only from this page.
+Downloader Ultra is free and open source under the [GPL-3.0](LICENSE). The source code is at **[Paradox-ultra/paradox-downloader-source](https://github.com/Paradox-ultra/paradox-downloader-source)**. This repository hosts the official signed release builds; please download the app only from this page.
 
 <details>
 <summary>For maintainers: publishing a build</summary>
